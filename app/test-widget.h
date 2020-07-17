@@ -2,6 +2,7 @@
 #define TESTWIDGET_H
 
 #include "close-button.h"
+#include "detail-button.h"
 #include "progress-bar.h"
 #include "stop-button.h"
 
@@ -21,6 +22,7 @@ private:
     ProgressBar* pb = nullptr;
     CloseButton* cb = nullptr;
     StopButton * sb = nullptr;
+    DetailButton* db = nullptr;
 
 };
 
