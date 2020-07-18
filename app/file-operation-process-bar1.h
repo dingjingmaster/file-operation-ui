@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QScrollArea>
 
 class CloseButton;
 class ProgressBar;
@@ -36,17 +37,22 @@ private:
     ~FileOperationProcessBar();
 
 private:
-    bool m_detail_open = false;
-
     float m_width = 420;
     float m_height = 100;
     float m_max_height = 300;
+    bool m_detail_open = false;
+    QFrame* m_spline = nullptr;
     QLabel* m_detail_label = nullptr;
+    QWidget* m_detail_widget = nullptr;
+    QScrollArea* m_scrollArea = nullptr;
     QVBoxLayout* m_main_layout = nullptr;
     DetailButton* m_show_detail = nullptr;
     QHBoxLayout* m_detail_layout = nullptr;
+
+    QWidget* m_process_widget = nullptr;
     QVBoxLayout* m_process_layout = nullptr;
     QMap<FileOperationProcess, Status>* m_process = nullptr;
+
 };
 
 class FileOperationProcess : public QWidget
@@ -66,8 +72,8 @@ private:
     QLabel* m_process_file = nullptr;
     ProgressBar* m_progress = nullptr;
     QLabel* m_process_percent = nullptr;
-    QVBoxLayout* m_vbox_layout = nullptr;
-    QHBoxLayout* m_main_layout = nullptr;
+    QHBoxLayout* m_vbox_layout = nullptr;
+    QVBoxLayout* m_main_layout = nullptr;
     QLabel* m_process_left_item = nullptr;
     StartStopButton* m_start_stop = nullptr;
 };
@@ -78,7 +84,6 @@ class ProgressBar : public QWidget
 public:
     explicit ProgressBar(QWidget *parent = nullptr);
     ~ProgressBar();
-    void setArea(QSize size);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -90,7 +95,8 @@ public:
 
 private:
     QRectF m_area;
-    double m_current_value;
+    bool m_detail = false;
+    double m_current_value = 0.8;
 };
 
 class DetailButton : public QWidget
@@ -98,8 +104,6 @@ class DetailButton : public QWidget
     Q_OBJECT
 public:
     explicit DetailButton(QWidget *parent = nullptr);
-
-    void setSize (float size);
 
 Q_SIGNALS:
     void valueChanged (bool open);
@@ -111,7 +115,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event)override;
 
 private:
-    float m_size = 12;
+    float m_size = 18;
     bool m_open = false;
 };
 
@@ -125,12 +129,15 @@ class StartStopButton : public QWidget
 public:
     explicit StartStopButton(QWidget *parent = nullptr);
 
+Q_SIGNALS:
+    void startStopClicked (bool start);
 protected:
     void paintEvent(QPaintEvent *) override;
     void mouseReleaseEvent(QMouseEvent *event)override;
 
 private:
     float m_size = 12;
+    bool m_start = true;
 };
 
 class CloseButton : public QWidget
