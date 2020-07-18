@@ -1,15 +1,14 @@
-#include "progress-bar.h"
-#include "test-widget.h"
-#include <QWidget>
+#include "file-operation-process-bar.h"
+
 #include <QApplication>
 
 int main (int argc, char* argv[])
 {
     QApplication a (argc, argv);
-    TestWidget* ts = new TestWidget(nullptr);
-    ts->resize(500, 500);
+    FileOperationProcessBar& fb = FileOperationProcessBar::getInstance();
+    fb.addFileOperation();
 
-    ts->show();
+    fb.show();
 
     return a.exec();
 }
