@@ -6,6 +6,8 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QScrollArea>
+#include <QMainWindow>
+#include <QMutex>
 
 class CloseButton;
 class ProgressBar;
@@ -17,56 +19,67 @@ class FileOperationProcessBar : public QWidget
 {
     Q_OBJECT
 public:
-    enum Status{
+    enum Status
+    {
         STOP,
         PREPARE,
         RUNNING,
         FINISHED,
         CANCELED,
+        FREE,
     };
 public:
     static FileOperationProcessBar &getInstance();
 
-    FileOperationProcess& addFileOperation ();
-
-protected:
-    void openDetail(bool open);
+    FileOperationProcess* addFileOperation ();
+    void showProcess(FileOperationProcess& proc);
+    void removeFileOperation(FileOperationProcess** fileOperation);
 
 private:
     explicit FileOperationProcessBar(QWidget *parent = nullptr);
     ~FileOperationProcessBar();
 
+public Q_SLOTS:
+    void detailInfo (bool open);
+
 private:
-    float m_width = 420;
-    float m_height = 100;
+    float m_width = 500;
+    float m_height = 150;
+    float m_margin = 20;
     float m_max_height = 300;
-    bool m_detail_open = false;
+    const int m_max_progressbar = 1;                               // reserved one for undo or redo
+
     QFrame* m_spline = nullptr;
     QLabel* m_detail_label = nullptr;
     QWidget* m_detail_widget = nullptr;
-    QScrollArea* m_scrollArea = nullptr;
+    QScrollArea* m_scroll_area = nullptr;
     QVBoxLayout* m_main_layout = nullptr;
     DetailButton* m_show_detail = nullptr;
     QHBoxLayout* m_detail_layout = nullptr;
 
-    QWidget* m_process_widget = nullptr;
+    QWidget* m_scroll_widget = nullptr;
+    QMainWindow* m_process_widget = nullptr;
     QVBoxLayout* m_process_layout = nullptr;
-    QMap<FileOperationProcess, Status>* m_process = nullptr;
 
+    int m_inuse_process = 0;
+    QMutex *m_process_locker = nullptr;                             // maybe not need
+    QMap<FileOperationProcess*, Status>* m_process = nullptr;       // all of processbar, fixme
 };
 
 class FileOperationProcess : public QWidget
 {
+    friend FileOperationProcessBar;
     Q_OBJECT
 public:
-    explicit FileOperationProcess(QWidget *parent = nullptr);
-    ~FileOperationProcess();
-
-public Q_SLOTS:
-    void showDetail (bool detail);
+    explicit FileOperationProcess(float width, float heigth, QWidget *parent = nullptr);
 
 private:
-    bool m_show_detail = false;
+    ~FileOperationProcess();
+    void initParam ();
+
+public Q_SLOTS:
+
+private:
     CloseButton* m_close = nullptr;
     QLabel* m_process_name = nullptr;
     QLabel* m_process_file = nullptr;
@@ -80,6 +93,7 @@ private:
 
 class ProgressBar : public QWidget
 {
+    friend FileOperationProcess;
     Q_OBJECT
 public:
     explicit ProgressBar(QWidget *parent = nullptr);
@@ -96,7 +110,7 @@ public:
 private:
     QRectF m_area;
     bool m_detail = false;
-    double m_current_value = 0.8;
+    double m_current_value = 1.0;
 };
 
 class DetailButton : public QWidget
@@ -116,7 +130,7 @@ protected:
 
 private:
     float m_size = 18;
-    bool m_open = false;
+    bool m_open = true;
 };
 
 /**

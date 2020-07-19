@@ -1,14 +1,15 @@
-#include "file-operation-progressbar.h"
+#include "file-operation-progress-bar.h"
 
 #include <QApplication>
 
 int main (int argc, char* argv[])
 {
     QApplication a (argc, argv);
-    FileOperationProgressBar* fb = new FileOperationProgressBar();
-//    fb.addFileOperation();
+    FileOperationProcessBar& fb = FileOperationProcessBar::getInstance();
+    FileOperationProcess* prc = fb.addFileOperation();
+    fb.showProcess(*prc);
 
-    fb->show();
+//    fb.show();
 
     return a.exec();
 }

@@ -9,8 +9,8 @@ CONFIG += c++11 no_keywords
 DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
-    $$PWD/main.cpp                  \
-    file-operation-progressbar.cpp
+    $$PWD/main.cpp\
+    $$PWD/file-operation-progress-bar.cpp\
 #    $$PWD/progress-bar.cpp          \
 #    close-button.cpp \
 #    detail-button.cpp \
@@ -18,13 +18,12 @@ SOURCES += \
  #    test-widget.cpp
 
 HEADERS += \
-    file-operation-progressbar.h
+    $$PWD/file-operation-progress-bar.h \
 #    $$PWD/progress-bar.h            \
 #    close-button.h \
 #    detail-button.h \
 #    stop-button.h \
  #    test-widget.h
 
-FORMS += \
-    file-operation-progressbar.ui
+FORMS +=
 
