@@ -8,6 +8,7 @@
 #include <QScrollArea>
 #include <QMainWindow>
 #include <QMutex>
+#include <QListWidget>
 
 class CloseButton;
 class ProgressBar;

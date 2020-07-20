@@ -10,20 +10,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     $$PWD/main.cpp\
-    $$PWD/file-operation-progress-bar.cpp\
+    $$PWD/file-operation-progress-bar.cpp
 #    $$PWD/progress-bar.cpp          \
 #    close-button.cpp \
 #    detail-button.cpp \
 #    stop-button.cpp \
- #    test-widget.cpp
+  #    test-widget.cpp
 
 HEADERS += \
-    $$PWD/file-operation-progress-bar.h \
+    $$PWD/file-operation-progress-bar.h
 #    $$PWD/progress-bar.h            \
 #    close-button.h \
 #    detail-button.h \
 #    stop-button.h \
- #    test-widget.h
+  #    test-widget.h
 
 FORMS +=
 
