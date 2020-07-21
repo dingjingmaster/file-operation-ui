@@ -1,4 +1,6 @@
-#include "file-operation-progress-bar.h"
+//#include "file-operation-progress-bar.h"
+
+#include "main-progress-bar.h"
 
 #include <QApplication>
 #include <QListWidget>
@@ -12,26 +14,37 @@ int main (int argc, char* argv[])
 //    fb.showProcess(*prc);
 //    fb.show();
 
-    QWidget* w = new QWidget;
-    QListWidget* l = new QListWidget(w);
+//    QWidget* w = new QWidget;
+//    QListWidget* l = new QListWidget(w);
 
-    w->setStyleSheet("QListWidget::Item:hover,QListWidget::Item:selected{background-color:rgba(22,29,36,0);}");
+////    w->setStyleSheet("QListWidget::Item:hover,QListWidget::Item:selected{background-color:rgba(22,29,36,0);}");
 
-    for (int i = 0; i < 5; ++i) {
-        QListWidgetItem* it = new QListWidgetItem;
-        QWidget* pb = new DetailButton;
+//    for (int i = 0; i < 15; ++i) {
+//        QListWidgetItem* it = new QListWidgetItem;
+//        QWidget* pb = new DetailButton;
 
-        l->addItem(it);
-        l->setItemWidget(it, pb);
+//        l->addItem(it);
+//        l->setItemWidget(it, pb);
 
-    }
-    l->setFocusPolicy(Qt::NoFocus);
+//        l->removeItemWidget(it);
+//        delete pb;
+//        delete it;
 
-    l->setViewMode(QListView::ListMode);
+//    }
+//    l->setFocusPolicy(Qt::NoFocus);
+
+//    l->setViewMode(QListView::ListMode);
 
 //    w->setWid
 
-    w->show();
+//    w->show();
+
+
+
+    // main
+    MainProgressBar* mp = new MainProgressBar;
+
+    mp->show();
 
     return a.exec();
 }
