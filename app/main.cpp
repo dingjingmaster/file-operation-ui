@@ -1,11 +1,8 @@
-//#include "file-operation-progress-bar.h"
+#include "file-operation-progressbar.h"
 
-#include "main-progress-bar.h"
-#include "other-button.h"
-
-#include <QApplication>
 #include <QListWidget>
 #include <QPushButton>
+#include <QApplication>
 
 int main (int argc, char* argv[])
 {
@@ -18,7 +15,7 @@ int main (int argc, char* argv[])
 //    QWidget* w = new QWidget;
 //    QListWidget* l = new QListWidget(w);
 
-////    w->setStyleSheet("QListWidget::Item:hover,QListWidget::Item:selected{background-color:rgba(22,29,36,0);}");
+//    w->setStyleSheet("QListWidget::Item:hover,QListWidget::Item:selected{background-color:rgba(22,29,36,0);}");
 
 //    for (int i = 0; i < 15; ++i) {
 //        QListWidgetItem* it = new QListWidgetItem;
@@ -47,8 +44,15 @@ int main (int argc, char* argv[])
 
 //    mp->show();
     // other button
-    OtherButton* ob = new OtherButton;
-    ob->show();
+//    OtherButton* ob = new OtherButton;
+//    ob->show();
+
+    // progress list
+//    ProgressList* pl = new ProgressList;
+//    pl->show();
+
+    FileOperationProgressBar* fb = new FileOperationProgressBar;
+    fb->show();
 
 
     return a.exec();
