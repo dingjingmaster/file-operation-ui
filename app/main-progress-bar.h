@@ -43,6 +43,10 @@ private:
     int m_file_name_height = 20;
     int m_file_name_margin = 10;
 
+    // percent
+    int m_percent_margin = 15;
+    int m_percent_height = 20;
+
     // foot
     float m_foot_margin = 3;
 

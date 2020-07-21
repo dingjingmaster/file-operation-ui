@@ -1,6 +1,7 @@
 //#include "file-operation-progress-bar.h"
 
 #include "main-progress-bar.h"
+#include "other-button.h"
 
 #include <QApplication>
 #include <QListWidget>
@@ -42,9 +43,13 @@ int main (int argc, char* argv[])
 
 
     // main
-    MainProgressBar* mp = new MainProgressBar;
+//    MainProgressBar* mp = new MainProgressBar;
 
-    mp->show();
+//    mp->show();
+    // other button
+    OtherButton* ob = new OtherButton;
+    ob->show();
+
 
     return a.exec();
 }

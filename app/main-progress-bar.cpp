@@ -108,7 +108,10 @@ void MainProgressBar::paintHeader(QPainter &painter)
 
 void MainProgressBar::paintContent(QPainter &painter)
 {
+    double x = 0;
     double y = 0;
+    double w = 0;
+    double h = 0;
 
     painter.save();
 
@@ -121,9 +124,17 @@ void MainProgressBar::paintContent(QPainter &painter)
     painter.drawRect(m_icon_margin, y, m_icon_size, m_icon_size);
 
     // paint file name
+    x = m_icon_margin + m_file_name_margin + m_icon_size;
     y = m_fix_height / 2 - m_file_name_height / 2;
-    painter.drawRect(m_icon_margin + m_file_name_margin + m_icon_size, y,
-                     m_fix_width - m_icon_size - m_icon_margin - m_file_name_margin * 3, m_file_name_height);
+    w = m_fix_width - m_icon_size - m_icon_margin - m_file_name_margin * 3;
+    painter.drawRect(x, y, w, m_file_name_height);
+
+    // paint percentage
+    x = m_fix_width - m_percent_margin * 3;
+    y = m_fix_height - m_foot_margin - m_percent_height - m_percent_margin;
+    w = m_percent_margin * 2;
+    painter.drawRect(x, y, w, m_percent_height);
+
 
     painter.restore();
 }
