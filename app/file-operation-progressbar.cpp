@@ -21,6 +21,20 @@ FileOperationProgressBar::FileOperationProgressBar(QWidget *parent) : QWidget(pa
     m_main_layout->addWidget(m_main_progressbar);
     m_main_layout->addWidget(m_other_progressbar);
     m_main_layout->addWidget(m_list_widget);
+
+    m_progress_list = new QMap<ProgressBar*, QListWidgetItem*>;
+
+    showWidgetList(false);
+
+    connect(m_main_progressbar, &MainProgressBar::minimized, [=](){
+        this->showMinimized();
+    });
+    connect(m_main_progressbar, &MainProgressBar::closeWindow, [=](){
+        qDebug() << "close all";
+        Q_EMIT cancelAll();
+    });
+    connect(m_other_progressbar, &OtherButton::clicked, this, &FileOperationProgressBar::showWidgetList);
+    setFixedHeight(m_main_progressbar->height() + m_other_progressbar->height());
 }
 
 void FileOperationProgressBar::mouseMoveEvent(QMouseEvent *event)
@@ -43,6 +57,17 @@ void FileOperationProgressBar::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
         m_is_press = false;
+    }
+}
+
+void FileOperationProgressBar::showWidgetList(bool show)
+{
+    if (show) {
+        m_list_widget->show();
+        setFixedHeight(m_main_progressbar->height() + m_other_progressbar->height() + m_progress_list_heigth);
+    } else {
+        m_list_widget->hide();
+        setFixedHeight(m_main_progressbar->height() + m_other_progressbar->height());
     }
 }
 
@@ -98,12 +123,12 @@ void MainProgressBar::mouseReleaseEvent(QMouseEvent *event)
             && (pos.x() <= (m_fix_width - m_btn_margin * 2 - m_btn_size))
             && (pos.y() >= m_btn_margin_top)
             && (pos.y() <= m_btn_margin_top + m_btn_size)) {
-        qDebug() << "mini";
+        Q_EMIT minimized();
     } else if ((pos.x() >= m_fix_width - m_btn_margin - m_btn_size)
                && (pos.x() <= (m_fix_width - m_btn_margin))
                && (pos.y() >= m_btn_margin_top)
                && (pos.y() <= m_btn_margin_top + m_btn_size)) {
-        qDebug() << "close";
+        Q_EMIT closeWindow();
     }
 
     QWidget::mouseReleaseEvent(event);
@@ -198,6 +223,11 @@ void MainProgressBar::paintProgress(QPainter &painter)
     painter.restore();
 }
 
+void MainProgressBar::updateValue(double)
+{
+
+}
+
 
 OtherButton::OtherButton(QWidget *parent) : QWidget(parent)
 {
@@ -212,8 +242,6 @@ void OtherButton::paintEvent(QPaintEvent *event)
 {
     double x = 0;
     double y = 0;
-    double w = 0;
-    double h = 0;
 
     QPainter painter(this);
     painter.save();
@@ -244,5 +272,73 @@ void OtherButton::paintEvent(QPaintEvent *event)
 
 void OtherButton::mouseReleaseEvent(QMouseEvent *event)
 {
-    qDebug() << "click!";
+    m_show = !m_show;
+
+    Q_EMIT clicked(m_show);
+
+    Q_UNUSED(event);
+}
+
+ProgressBar::ProgressBar(QWidget *parent) : QWidget(parent)
+{
+    setContentsMargins(0, 0, 0, 0);
+    setFixedHeight(m_fix_height);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+}
+
+ProgressBar::~ProgressBar()
+{
+
+}
+
+void ProgressBar::initParam()
+{
+
+}
+
+void ProgressBar::paintEvent(QPaintEvent *event)
+{
+    /*
+    int m_min_width = 400;
+    int m_fix_height = 20;
+
+    int m_margin_ud = 2;
+    int m_margin_lr = 8;
+    int m_icon_size = 16;
+    int m_progress_width = 80;
+    */
+
+    double x = 0;
+    double y = 0;
+    double w = 0;
+    double h = 0;
+
+    QPainter painter(this);
+    painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
+
+    painter.save();
+
+    // paint icon
+    x = m_margin_lr;
+    y = (height() - m_margin_ud * 2 - m_icon_size) / 2 + m_margin_ud;
+    QPen pen(QColor(192, 192, 192), 1);
+    pen.setStyle(Qt::SolidLine);
+    painter.setBrush(Qt::NoBrush);
+    painter.setPen(pen);
+    painter.drawRect(x, y, m_icon_size, m_icon_size);
+
+    // paint text
+    x = m_margin_lr * 2 + m_icon_size;
+    y = (height() - m_margin_ud * 2 - m_text_height) / 2 + m_margin_ud;
+    w = width() - m_margin_lr * 5 - m_icon_size - m_btn_size;
+    pen.setStyle(Qt::SolidLine);
+    painter.setBrush(Qt::NoBrush);
+    painter.setPen(pen);
+    painter.drawRect(x, y, w, m_text_height);
+
+    // paint progress
+//    x = height() - m_margin_lr - m
+
+
+    painter.restore();
 }

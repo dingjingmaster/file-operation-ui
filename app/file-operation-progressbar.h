@@ -5,6 +5,7 @@
 #include <QHBoxLayout>
 #include <QListWidget>
 
+class ProgressBar;
 class OtherButton;
 class MainProgressBar;
 
@@ -18,8 +19,10 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+    void showWidgetList(bool show);
 
 Q_SIGNALS:
+    void cancelAll();
 
 private:
     // layout
@@ -30,12 +33,46 @@ private:
     OtherButton* m_other_progressbar = nullptr;
     QListWidget* m_list_widget = nullptr;
 
+    ProgressBar* m_current_main = nullptr;
+    QMap<ProgressBar*, QListWidgetItem*>* m_progress_list = nullptr;
+
+    int m_progress_list_heigth = 60;
 
     // ui
     bool m_is_press = false;
     QPoint m_position;
 };
 
+class ProgressBar : public QWidget
+{
+    friend FileOperationProgressBar;
+    Q_OBJECT
+public:
+    explicit ProgressBar (QWidget* parent = nullptr);
+
+private:
+    ~ProgressBar();
+    void initParam ();
+Q_SIGNALS:
+    void cancelled();
+    void finished(ProgressBar* fop);
+
+protected:
+    void paintEvent(QPaintEvent *event) override;
+
+public Q_SLOTS:
+
+private:
+    int m_min_width = 400;
+    int m_fix_height = 20;
+
+    int m_margin_ud = 2;
+    int m_margin_lr = 8;
+    int m_icon_size = 16;
+    int m_text_height = 10;
+    int m_btn_size = 10;
+    int m_progress_width = 80;
+};
 
 class MainProgressBar : public QWidget
 {
@@ -55,6 +92,11 @@ private:
     void paintProgress (QPainter& painter);
 
 Q_SIGNALS:
+    void minimized();
+    void closeWindow();
+
+public Q_SLOTS:
+    void updateValue (double);
 
 private:
     // header
@@ -99,6 +141,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
 
 Q_SIGNALS:
+    void clicked (bool show);
 
 private:
     // button height
@@ -109,6 +152,9 @@ private:
     // text width
     int m_text_length = 100;
     QString m_text = "";
+
+    // show
+    bool m_show = false;
 };
 
 
