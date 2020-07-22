@@ -32,6 +32,9 @@ protected:
 Q_SIGNALS:
     void cancelAll();
 
+public Q_SLOTS:
+    void mainProgressChange(QListWidgetItem *item);
+
 private:
     // layout
     QVBoxLayout* m_main_layout = nullptr;
@@ -43,6 +46,7 @@ private:
 
     ProgressBar* m_current_main = nullptr;
     QMap<ProgressBar*, QListWidgetItem*>* m_progress_list = nullptr;
+    QMap<QListWidgetItem*, ProgressBar*>* m_widget_list = nullptr;
 
     int m_show_items = 3;
     bool m_show_more = false;
@@ -61,6 +65,10 @@ class ProgressBar : public QWidget
     Q_OBJECT
 public:
     explicit ProgressBar (QWidget* parent = nullptr);
+    void setFileName (QString fileName);
+    void setIcon (QIcon icon);
+    QString getFileName();
+    QIcon getIcon();
 
 private:
     ~ProgressBar();
@@ -68,6 +76,7 @@ private:
 
 Q_SIGNALS:
     void cancelled();
+    void sendValue(double);
     void finished(ProgressBar* fop);
 
 protected:
@@ -75,6 +84,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
 
 public Q_SLOTS:
+    void updateValue(double);
 
 private:
     int m_min_width = 400;
@@ -93,6 +103,8 @@ private:
 
     // value
     double m_current_value = 0.8;
+    QString m_file_name;
+    QIcon m_icon;
 };
 
 class MainProgressBar : public QWidget
@@ -100,6 +112,9 @@ class MainProgressBar : public QWidget
     Q_OBJECT
 public:
     explicit MainProgressBar(QWidget *parent = nullptr);
+    void setFileIcon (QIcon icon);
+    void setFileName (QString name);
+    void setTitle (QString title);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -148,6 +163,8 @@ private:
     float m_foot_margin = 3;
 
     // progress
+    QIcon m_icon;
+    QString m_file_name;
     float m_current_value = 0.8;
 };
 

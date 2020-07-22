@@ -52,13 +52,29 @@ int main (int argc, char* argv[])
 //    pl->show();
 
     FileOperationProgressBar* fb = FileOperationProgressBar::getInstance();
-    fb->addFileOperation();
-    fb->addFileOperation();
-    fb->addFileOperation();
-    fb->addFileOperation();
-    fb->addFileOperation();
-    fb->show();
 
+    ProgressBar* pb = fb->addFileOperation();
+    pb->setFileName("111");
+
+    pb = fb->addFileOperation();
+    pb->setFileName("222");
+
+    pb = fb->addFileOperation();
+    pb->setFileName("333");
+
+    pb = fb->addFileOperation();
+    pb->setFileName("444");
+
+    pb = fb->addFileOperation();
+    pb->setFileName("555");
+
+    pb = fb->addFileOperation();
+    pb->setFileName("666");
+
+    pb = fb->addFileOperation();
+    pb->setFileName("777");
+
+    fb->show();
 
     return a.exec();
 }

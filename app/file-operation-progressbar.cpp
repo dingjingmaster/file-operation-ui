@@ -18,6 +18,7 @@ ProgressBar *FileOperationProgressBar::addFileOperation()
     m_list_widget->addItem(li);
     m_list_widget->setItemWidget(li, proc);
     (*m_progress_list)[proc] = li;
+    (*m_widget_list)[li] = proc;
     li->setSizeHint(QSize(m_main_progressbar->width(), m_progress_item_height));
 
     li->setFlags(Qt::NoItemFlags);
@@ -59,6 +60,7 @@ FileOperationProgressBar::FileOperationProgressBar(QWidget *parent) : QWidget(pa
     m_main_layout->addWidget(m_list_widget);
 
     m_progress_list = new QMap<ProgressBar*, QListWidgetItem*>;
+    m_widget_list = new QMap<QListWidgetItem*, ProgressBar*>;
 
     showWidgetList(false);
 
@@ -70,6 +72,7 @@ FileOperationProgressBar::FileOperationProgressBar(QWidget *parent) : QWidget(pa
         Q_EMIT cancelAll();
     });
     connect(m_other_progressbar, &OtherButton::clicked, this, &FileOperationProgressBar::showWidgetList);
+    connect(m_list_widget, &QListWidget::itemClicked, this, &FileOperationProgressBar::mainProgressChange);
 
     showMore();
 }
@@ -95,7 +98,6 @@ void FileOperationProgressBar::showMore()
         qDebug() << "show little: " << m_show_more << " w: " << width() << " h: " << height();
         setFixedSize(m_main_progressbar->width(), m_main_progressbar->height() + m_other_progressbar->height());
     }
-
 }
 
 void FileOperationProgressBar::mouseMoveEvent(QMouseEvent *event)
@@ -132,6 +134,17 @@ void FileOperationProgressBar::showWidgetList(bool show)
     showMore();
 }
 
+void FileOperationProgressBar::mainProgressChange(QListWidgetItem *item)
+{
+    ProgressBar* pb = (*m_widget_list)[item];
+    m_current_main = pb;
+    m_main_progressbar->setFileName(m_current_main->getFileName());
+    m_main_progressbar->setFileIcon(m_current_main->getIcon());
+    m_main_progressbar->disconnect();
+    m_main_progressbar->connect(m_current_main, &ProgressBar::sendValue, m_main_progressbar, &MainProgressBar::updateValue);
+    update();
+}
+
 
 MainProgressBar::MainProgressBar(QWidget *parent) : QWidget(parent)
 {
@@ -141,6 +154,21 @@ MainProgressBar::MainProgressBar(QWidget *parent) : QWidget(parent)
     m_title = "sadasudianhdiahdisahud";
 
     setFixedSize(m_fix_width, m_fix_height);
+}
+
+void MainProgressBar::setFileIcon(QIcon icon)
+{
+    m_icon = icon;
+}
+
+void MainProgressBar::setFileName(QString name)
+{
+    m_file_name = name;
+}
+
+void MainProgressBar::setTitle(QString title)
+{
+    m_title = title;
 }
 
 void MainProgressBar::paintEvent(QPaintEvent *event)
@@ -258,6 +286,10 @@ void MainProgressBar::paintContent(QPainter &painter)
     y = m_fix_height / 2 - m_file_name_height / 2;
     w = m_fix_width - m_icon_size - m_icon_margin - m_file_name_margin * 3;
     painter.drawRect(x, y, w, m_file_name_height);
+    QFont font = painter.font();
+    font.setPixelSize(12);
+    painter.setFont(font);
+    painter.drawText(x, y, w, m_file_name_height, Qt::AlignLeft | Qt::AlignVCenter, m_file_name);
 
     // paint percentage
     x = m_fix_width - m_percent_margin * 3;
@@ -284,11 +316,14 @@ void MainProgressBar::paintProgress(QPainter &painter)
     painter.restore();
 }
 
-void MainProgressBar::updateValue(double)
+void MainProgressBar::updateValue(double value)
 {
+    if (value >= 0 && value <= 1) {
+        m_current_value = value;
+    }
 
+    update();
 }
-
 
 OtherButton::OtherButton(QWidget *parent) : QWidget(parent)
 {
@@ -348,6 +383,26 @@ ProgressBar::ProgressBar(QWidget *parent) : QWidget(parent)
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
+void ProgressBar::setIcon(QIcon icon)
+{
+    m_icon = icon;
+}
+
+QString ProgressBar::getFileName()
+{
+    return m_file_name;
+}
+
+QIcon ProgressBar::getIcon()
+{
+    return m_icon;
+}
+
+void ProgressBar::setFileName(QString fileName)
+{
+    m_file_name = fileName;
+}
+
 ProgressBar::~ProgressBar()
 {
 
@@ -355,7 +410,7 @@ ProgressBar::~ProgressBar()
 
 void ProgressBar::initParam()
 {
-
+    m_current_value = 0;
 }
 
 void ProgressBar::paintEvent(QPaintEvent *event)
@@ -385,7 +440,11 @@ void ProgressBar::paintEvent(QPaintEvent *event)
     pen.setStyle(Qt::SolidLine);
     painter.setBrush(Qt::NoBrush);
     painter.setPen(pen);
+    QFont font = painter.font();
+    font.setPixelSize(10);
+    painter.setFont(font);
     painter.drawRect(x, y, w, m_text_height);
+    painter.drawText(x, y, w, m_text_height, Qt::AlignLeft | Qt::AlignVCenter, m_file_name);
 
     // paint progress
     x = m_margin_lr * 3 + m_icon_size + w;
@@ -432,4 +491,13 @@ void ProgressBar::mouseReleaseEvent(QMouseEvent *event)
     }
 
     QWidget::mouseReleaseEvent(event);
+}
+
+void ProgressBar::updateValue(double value)
+{
+    if (value >= 0 && value <= 1) {
+        m_current_value = value;
+    }
+
+    Q_EMIT sendValue(m_current_value);
 }
