@@ -24,7 +24,7 @@ ProgressBar *FileOperationProgressBar::addFileOperation()
     li->setFlags(Qt::NoItemFlags);
 
     connect(proc, &ProgressBar::finished, this, &FileOperationProgressBar::removeFileOperation);
-    ++ m_progress_size;
+    ++m_progress_size;
 
     showMore();
 
@@ -33,11 +33,35 @@ ProgressBar *FileOperationProgressBar::addFileOperation()
 
 void FileOperationProgressBar::showProgress(ProgressBar &progress)
 {
-    // check Main progress is inuse???
+    if (m_progress_size > 0) {
+        progress.show();
+        show();
+    }
 }
 
 void FileOperationProgressBar::removeFileOperation(ProgressBar *progress)
 {
+    QListWidgetItem* li = (*m_progress_list)[progress];
+
+    // check main progress
+    if (m_current_main == progress) {
+
+    }
+
+    // delete from map
+    m_list_widget->removeItemWidget(li);
+    m_progress_list->remove(progress);
+    m_widget_list->remove(li);
+
+    // free progress
+    delete progress;
+    delete li;
+    --m_progress_size;
+
+    if (m_progress_size <= 0) {
+        m_progress_size = 0;
+        hide();
+    }
     showMore();
 }
 
@@ -81,22 +105,22 @@ void FileOperationProgressBar::showMore()
 {
     if (m_progress_size > 1) {
         m_other_progressbar->show();
+        if (m_progress_size > 1 && m_progress_size <= m_show_items) {
+            m_list_widget->setFixedHeight(m_progress_size * m_progress_item_height);
+        } else if (m_progress_size > 3) {
+            m_list_widget->setFixedHeight(3 * m_progress_item_height);
+        }
+
+        if (m_show_more) {
+            qDebug() << "show more: " << m_show_more << " w: " << width() << " h: " << height();
+            setFixedSize(m_main_progressbar->width(), m_main_progressbar->height() + m_other_progressbar->height() + m_list_widget->height());
+        } else {
+            qDebug() << "show little: " << m_show_more << " w: " << width() << " h: " << height();
+            setFixedSize(m_main_progressbar->width(), m_main_progressbar->height() + m_other_progressbar->height());
+        }
     } else {
         m_other_progressbar->hide();
-    }
-
-    if (m_progress_size > 1 && m_progress_size <= m_show_items) {
-        m_list_widget->setFixedHeight(m_progress_size * m_progress_item_height);
-    } else if (m_progress_size > 3) {
-        m_list_widget->setFixedHeight(3 * m_progress_item_height);
-    }
-
-    if (m_show_more) {
-        qDebug() << "show more: " << m_show_more << " w: " << width() << " h: " << height();
-        setFixedSize(m_main_progressbar->width(), m_main_progressbar->height() + m_other_progressbar->height() + m_list_widget->height());
-    } else {
-        qDebug() << "show little: " << m_show_more << " w: " << width() << " h: " << height();
-        setFixedSize(m_main_progressbar->width(), m_main_progressbar->height() + m_other_progressbar->height());
+        setFixedSize(m_main_progressbar->width(), m_main_progressbar->height());
     }
 }
 
@@ -295,6 +319,10 @@ void MainProgressBar::paintContent(QPainter &painter)
     x = m_fix_width - m_percent_margin * 3;
     y = m_fix_height - m_foot_margin - m_percent_height - m_percent_margin;
     w = m_percent_margin * 2;
+    font.setPixelSize(8);
+    painter.setFont(font);
+    painter.drawText(x, y, w, m_percent_height, Qt::AlignVCenter | Qt::AlignHCenter,
+                     QString(" %1 %").arg(QString::number(m_current_value * 100, 'f', 1)));
     painter.drawRect(x, y, w, m_percent_height);
 
 
@@ -307,24 +335,15 @@ void MainProgressBar::paintProgress(QPainter &painter)
 
     double value = m_current_value * m_fix_width;
 
-//    QLinearGradient progressBarBgGradient (QPointF(0, 0), QPointF(0, height()));
-//    progressBarBgGradient.setColorAt(0.0, QColor(175,238,238));
-//    progressBarBgGradient.setColorAt(1.0, QColor(175,238,238));
     painter.setPen(Qt::NoPen);
-//    painter.setBrush(progressBarBgGradient);
     painter.setBrush(QBrush(QColor(175,238,238)));
     painter.drawRoundedRect(0, 0, value, m_fix_height, 1, 1);
 
-//    QLinearGradient li (m_move_x * m_fix_width, 0, m_move_x * m_fix_width + 2, m_fix_height);
-//            QRadialGradient Radial(0,0,120,0,0);    //设置圆的原点和焦点在中心,半径120
+//    QLinearGradient progressBarBgGradient (QPointF(0, 0), QPointF(0, height()));
+//    progressBarBgGradient.setColorAt(0.0, QColor(175, 238, 238));
+//    progressBarBgGradient.setColorAt(1.0, QColor(175, 238, 238));
+//    painter.setBrush(progressBarBgGradient);
 
-//                Radial.setColorAt(0,Qt::red);
-//                Radial.setColorAt(0.5,Qt::blue);        //设置50%处的半径为蓝色
-//                Radial.setColorAt(1,Qt::green);
-
-//                painter.setPen(Qt::transparent);
-//                painter.setBrush(Radial);
-//                painter.drawEllipse(-120,-120,240,240);
 
     painter.restore();
 }
