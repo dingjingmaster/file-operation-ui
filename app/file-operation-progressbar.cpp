@@ -306,12 +306,25 @@ void MainProgressBar::paintProgress(QPainter &painter)
     painter.save();
 
     double value = m_current_value * m_fix_width;
-    QLinearGradient progressBarBgGradient (QPointF(0, 0), QPointF(0, height()));
-    progressBarBgGradient.setColorAt(0.0, QColor(175,238,238));
-    progressBarBgGradient.setColorAt(1.0, QColor(175,238,238));
+
+//    QLinearGradient progressBarBgGradient (QPointF(0, 0), QPointF(0, height()));
+//    progressBarBgGradient.setColorAt(0.0, QColor(175,238,238));
+//    progressBarBgGradient.setColorAt(1.0, QColor(175,238,238));
     painter.setPen(Qt::NoPen);
-    painter.setBrush(progressBarBgGradient);
+//    painter.setBrush(progressBarBgGradient);
+    painter.setBrush(QBrush(QColor(175,238,238)));
     painter.drawRoundedRect(0, 0, value, m_fix_height, 1, 1);
+
+//    QLinearGradient li (m_move_x * m_fix_width, 0, m_move_x * m_fix_width + 2, m_fix_height);
+//            QRadialGradient Radial(0,0,120,0,0);    //设置圆的原点和焦点在中心,半径120
+
+//                Radial.setColorAt(0,Qt::red);
+//                Radial.setColorAt(0.5,Qt::blue);        //设置50%处的半径为蓝色
+//                Radial.setColorAt(1,Qt::green);
+
+//                painter.setPen(Qt::transparent);
+//                painter.setBrush(Radial);
+//                painter.drawEllipse(-120,-120,240,240);
 
     painter.restore();
 }

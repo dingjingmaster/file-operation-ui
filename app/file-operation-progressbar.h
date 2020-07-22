@@ -165,6 +165,7 @@ private:
     // progress
     QIcon m_icon;
     QString m_file_name;
+    float m_move_x = 0.5;
     float m_current_value = 0.8;
 };
 
