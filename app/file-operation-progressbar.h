@@ -80,7 +80,7 @@ private:
     int m_min_width = 400;
     int m_fix_height = 40;
 
-    int m_btn_size = 10;
+    int m_btn_size = 16;
     int m_margin_ud = 2;
     int m_margin_lr = 8;
     int m_icon_size = 24;

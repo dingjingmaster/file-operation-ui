@@ -344,6 +344,7 @@ ProgressBar::ProgressBar(QWidget *parent) : QWidget(parent)
 {
     setContentsMargins(0, 0, 0, 0);
     setFixedHeight(m_fix_height);
+    setMouseTracking(true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
@@ -404,13 +405,13 @@ void ProgressBar::paintEvent(QPaintEvent *event)
     painter.drawRoundedRect(x, y, value, m_progress_height, 1, 1);
 
     // paint close
-    x =  m_margin_lr * 4 + m_icon_size + w + m_progress_width;
-    y = (height() - m_margin_ud * 2 - m_percent_width) / 2 + m_margin_ud;
+    x =  m_margin_lr * 5 + m_icon_size + w + m_progress_width;
+    y = (height() - m_margin_ud * 2 - m_btn_size) / 2 + m_margin_ud;
 
     pen.setStyle(Qt::SolidLine);
     painter.setBrush(Qt::NoBrush);
     painter.setPen(pen);
-    painter.drawRect(x, y, m_percent_width, m_percent_width);
+    painter.drawRect(x, y, m_btn_size, m_btn_size);
 
     painter.restore();
 
@@ -420,7 +421,7 @@ void ProgressBar::paintEvent(QPaintEvent *event)
 void ProgressBar::mouseReleaseEvent(QMouseEvent *event)
 {
     double w = width() - m_margin_lr * 5 - m_icon_size - m_btn_size - m_progress_width - m_percent_width;
-    double x =  m_margin_lr * 4 + m_icon_size + w + m_progress_width;
+    double x =  m_margin_lr * 5 + m_icon_size + w + m_progress_width;
     double y = (height() - m_margin_ud * 2 - m_btn_size) / 2 + m_margin_ud;
 
     QPoint pos = event->pos();
