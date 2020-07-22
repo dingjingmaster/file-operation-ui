@@ -389,11 +389,19 @@ void ProgressBar::paintEvent(QPaintEvent *event)
     // paint progress
     x = m_margin_lr * 3 + m_icon_size + w;
     y = (height() - m_margin_ud * 2 - m_progress_height) / 2 + m_margin_ud;
+    double value = m_current_value * m_progress_width;
 
     pen.setStyle(Qt::SolidLine);
     painter.setBrush(Qt::NoBrush);
     painter.setPen(pen);
     painter.drawRect(x, y, m_progress_width, m_progress_height);
+
+    QLinearGradient progressBarBgGradient (QPointF(0, 0), QPointF(0, height()));
+    progressBarBgGradient.setColorAt(0.0, QColor(175,238,238));
+    progressBarBgGradient.setColorAt(1.0, QColor(175,238,238));
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(progressBarBgGradient);
+    painter.drawRoundedRect(x, y, value, m_progress_height, 1, 1);
 
     // paint close
     x =  m_margin_lr * 4 + m_icon_size + w + m_progress_width;

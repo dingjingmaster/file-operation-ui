@@ -90,6 +90,9 @@ private:
     int m_progress_height = 5;
 
     int m_percent_width = 20;
+
+    // value
+    double m_current_value = 0.8;
 };
 
 class MainProgressBar : public QWidget
