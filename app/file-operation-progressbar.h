@@ -13,7 +13,15 @@ class FileOperationProgressBar : public QWidget
 {
     Q_OBJECT
 public:
+    static FileOperationProgressBar* getInstance();
+
+    ProgressBar* addFileOperation();
+    void showProgress (ProgressBar& progress);
+    void removeFileOperation(ProgressBar* progress);
+
+private:
     explicit FileOperationProgressBar(QWidget *parent = nullptr);
+    void showMore ();
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -36,9 +44,13 @@ private:
     ProgressBar* m_current_main = nullptr;
     QMap<ProgressBar*, QListWidgetItem*>* m_progress_list = nullptr;
 
-    int m_progress_list_heigth = 60;
+    int m_show_items = 3;
+    bool m_show_more = false;
+    int m_progress_item_height = 40;
+    int m_progress_list_heigth = 200;
 
     // ui
+    int m_progress_size = 0;
     bool m_is_press = false;
     QPoint m_position;
 };
@@ -64,14 +76,18 @@ public Q_SLOTS:
 
 private:
     int m_min_width = 400;
-    int m_fix_height = 20;
+    int m_fix_height = 40;
 
+    int m_btn_size = 10;
     int m_margin_ud = 2;
     int m_margin_lr = 8;
-    int m_icon_size = 16;
-    int m_text_height = 10;
-    int m_btn_size = 10;
+    int m_icon_size = 24;
+    int m_text_height = 20;
+
     int m_progress_width = 80;
+    int m_progress_height = 5;
+
+    int m_percent_width = 20;
 };
 
 class MainProgressBar : public QWidget

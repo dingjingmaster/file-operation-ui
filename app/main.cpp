@@ -51,7 +51,12 @@ int main (int argc, char* argv[])
 //    ProgressList* pl = new ProgressList;
 //    pl->show();
 
-    FileOperationProgressBar* fb = new FileOperationProgressBar;
+    FileOperationProgressBar* fb = FileOperationProgressBar::getInstance();
+    fb->addFileOperation();
+    fb->addFileOperation();
+    fb->addFileOperation();
+    fb->addFileOperation();
+    fb->addFileOperation();
     fb->show();
 
 

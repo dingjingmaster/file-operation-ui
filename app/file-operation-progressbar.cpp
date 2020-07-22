@@ -4,6 +4,42 @@
 #include <QPainter>
 #include <QMouseEvent>
 
+FileOperationProgressBar *FileOperationProgressBar::getInstance()
+{
+    static FileOperationProgressBar fb;
+
+    return &fb;
+}
+
+ProgressBar *FileOperationProgressBar::addFileOperation()
+{
+    ProgressBar* proc = new ProgressBar;
+    QListWidgetItem* li = new QListWidgetItem(m_list_widget);
+    m_list_widget->addItem(li);
+    m_list_widget->setItemWidget(li, proc);
+    (*m_progress_list)[proc] = li;
+    li->setSizeHint(QSize(m_main_progressbar->width(), m_progress_item_height));
+
+    li->setFlags(Qt::NoItemFlags);
+
+    connect(proc, &ProgressBar::finished, this, &FileOperationProgressBar::removeFileOperation);
+    ++ m_progress_size;
+
+    showMore();
+
+    return proc;
+}
+
+void FileOperationProgressBar::showProgress(ProgressBar &progress)
+{
+    // check Main progress is inuse???
+}
+
+void FileOperationProgressBar::removeFileOperation(ProgressBar *progress)
+{
+    showMore();
+}
+
 FileOperationProgressBar::FileOperationProgressBar(QWidget *parent) : QWidget(parent)
 {
     setWindowFlag(Qt::FramelessWindowHint);
@@ -34,7 +70,32 @@ FileOperationProgressBar::FileOperationProgressBar(QWidget *parent) : QWidget(pa
         Q_EMIT cancelAll();
     });
     connect(m_other_progressbar, &OtherButton::clicked, this, &FileOperationProgressBar::showWidgetList);
-    setFixedHeight(m_main_progressbar->height() + m_other_progressbar->height());
+
+    showMore();
+}
+
+void FileOperationProgressBar::showMore()
+{
+    if (m_progress_size > 1) {
+        m_other_progressbar->show();
+    } else {
+        m_other_progressbar->hide();
+    }
+
+    if (m_progress_size > 1 && m_progress_size <= m_show_items) {
+        m_list_widget->setFixedHeight(m_progress_size * m_progress_item_height);
+    } else if (m_progress_size > 3) {
+        m_list_widget->setFixedHeight(3 * m_progress_item_height);
+    }
+
+    if (m_show_more) {
+        qDebug() << "show more: " << m_show_more << " w: " << width() << " h: " << height();
+        setFixedSize(m_main_progressbar->width(), m_main_progressbar->height() + m_other_progressbar->height() + m_list_widget->height());
+    } else {
+        qDebug() << "show little: " << m_show_more << " w: " << width() << " h: " << height();
+        setFixedSize(m_main_progressbar->width(), m_main_progressbar->height() + m_other_progressbar->height());
+    }
+
 }
 
 void FileOperationProgressBar::mouseMoveEvent(QMouseEvent *event)
@@ -62,13 +123,13 @@ void FileOperationProgressBar::mouseReleaseEvent(QMouseEvent *event)
 
 void FileOperationProgressBar::showWidgetList(bool show)
 {
+    m_show_more = show;
     if (show) {
         m_list_widget->show();
-        setFixedHeight(m_main_progressbar->height() + m_other_progressbar->height() + m_progress_list_heigth);
     } else {
         m_list_widget->hide();
-        setFixedHeight(m_main_progressbar->height() + m_other_progressbar->height());
     }
+    showMore();
 }
 
 
@@ -298,16 +359,6 @@ void ProgressBar::initParam()
 
 void ProgressBar::paintEvent(QPaintEvent *event)
 {
-    /*
-    int m_min_width = 400;
-    int m_fix_height = 20;
-
-    int m_margin_ud = 2;
-    int m_margin_lr = 8;
-    int m_icon_size = 16;
-    int m_progress_width = 80;
-    */
-
     double x = 0;
     double y = 0;
     double w = 0;
@@ -330,15 +381,29 @@ void ProgressBar::paintEvent(QPaintEvent *event)
     // paint text
     x = m_margin_lr * 2 + m_icon_size;
     y = (height() - m_margin_ud * 2 - m_text_height) / 2 + m_margin_ud;
-    w = width() - m_margin_lr * 5 - m_icon_size - m_btn_size;
+    w = width() - m_margin_lr * 5 - m_icon_size - m_btn_size - m_progress_width - m_percent_width;
     pen.setStyle(Qt::SolidLine);
     painter.setBrush(Qt::NoBrush);
     painter.setPen(pen);
     painter.drawRect(x, y, w, m_text_height);
 
     // paint progress
-//    x = height() - m_margin_lr - m
+    x = m_margin_lr * 3 + m_icon_size + w;
+    y = (height() - m_margin_ud * 2 - m_progress_height) / 2 + m_margin_ud;
 
+    pen.setStyle(Qt::SolidLine);
+    painter.setBrush(Qt::NoBrush);
+    painter.setPen(pen);
+    painter.drawRect(x, y, m_progress_width, m_progress_height);
+
+    // paint close
+    x =  m_margin_lr * 4 + m_icon_size + w + m_progress_width;
+    y = (height() - m_margin_ud * 2 - m_percent_width) / 2 + m_margin_ud;
+
+    pen.setStyle(Qt::SolidLine);
+    painter.setBrush(Qt::NoBrush);
+    painter.setPen(pen);
+    painter.drawRect(x, y, m_percent_width, m_percent_width);
 
     painter.restore();
 }
