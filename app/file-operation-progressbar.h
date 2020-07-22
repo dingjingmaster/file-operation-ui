@@ -65,12 +65,14 @@ public:
 private:
     ~ProgressBar();
     void initParam ();
+
 Q_SIGNALS:
     void cancelled();
     void finished(ProgressBar* fop);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 
 public Q_SLOTS:
 

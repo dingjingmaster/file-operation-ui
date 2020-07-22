@@ -313,7 +313,7 @@ void OtherButton::paintEvent(QPaintEvent *event)
 
     // paint icon
     x = width() / 2 - m_icon_size - m_icon_margin - 20;
-    y = (m_button_heigth - m_icon_size) / 2;
+    y = (height() - m_icon_size) / 2;
     QRect iconArea (x, y, m_icon_size, m_icon_size);
     painter.drawRect(iconArea);
 
@@ -362,7 +362,6 @@ void ProgressBar::paintEvent(QPaintEvent *event)
     double x = 0;
     double y = 0;
     double w = 0;
-    double h = 0;
 
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
@@ -406,4 +405,22 @@ void ProgressBar::paintEvent(QPaintEvent *event)
     painter.drawRect(x, y, m_percent_width, m_percent_width);
 
     painter.restore();
+
+    Q_UNUSED(event);
+}
+
+void ProgressBar::mouseReleaseEvent(QMouseEvent *event)
+{
+    double w = width() - m_margin_lr * 5 - m_icon_size - m_btn_size - m_progress_width - m_percent_width;
+    double x =  m_margin_lr * 4 + m_icon_size + w + m_progress_width;
+    double y = (height() - m_margin_ud * 2 - m_btn_size) / 2 + m_margin_ud;
+
+    QPoint pos = event->pos();
+    if ((pos.x() >= x) && (pos.x() <= (x + m_btn_size))
+            && (pos.y() >= y) && (pos.y() <= y + m_btn_size)) {
+        qDebug() << "cancel";
+        Q_EMIT cancelled();
+    }
+
+    QWidget::mouseReleaseEvent(event);
 }
