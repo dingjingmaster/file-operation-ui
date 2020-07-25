@@ -67,7 +67,7 @@ void FileOperationProgressBar::removeFileOperation(ProgressBar *progress)
 
 FileOperationProgressBar::FileOperationProgressBar(QWidget *parent) : QWidget(parent)
 {
-    setWindowFlag(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint);
     setContentsMargins(0, 0, 0, 0);
 
     m_main_layout = new QVBoxLayout(this);
